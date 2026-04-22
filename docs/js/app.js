@@ -1,56 +1,48 @@
-// js/app.js
-
 import { processLog } from "./logEngine.js";
-import { renderLog } from "./renderer.js";
+import { renderLog, renderStats } from "./renderer.js";
+import { copyText, downloadText, exportJSON } from "./exportService.js";
+import { saveSession } from "./storage.js";
 
 const logArea = document.getElementById("log-area");
 const status = document.getElementById("status");
-const fileInput = document.getElementById("fileInput");
+const statsPanel = document.getElementById("statsPanel");
+const profileSelect = document.getElementById("profileSelect");
 
 let currentDoc = null;
 
-// FILE LOAD
-fileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const text = await file.text();
-
-    logArea.innerText = text;
-    status.innerText = `Loaded: ${file.name}`;
-});
-
-// PASTE
-window.pasteFromClipboard = async function () {
-    try {
-        const text = await navigator.clipboard.readText();
-        logArea.innerText = text;
-        status.innerText = "Pasted";
-    } catch {
-        status.innerText = "Clipboard blocked";
-    }
-};
-
-// CLEAR
-window.clearScreen = function () {
-    logArea.innerHTML = "";
-    status.innerText = "Cleared";
-};
-
-// WASH (MAIN ENTRY)
+// WASH
 window.washLog = function () {
     const input = logArea.innerText.trim();
     if (!input) return;
 
-    currentDoc = processLog(input, "default");
+    currentDoc = processLog(input, profileSelect.value);
 
     renderLog(currentDoc, logArea);
+    renderStats(currentDoc, statsPanel);
+
+    saveSession(currentDoc);
 
     status.innerText =
-        `Washed (${currentDoc.stats.after.chars} chars, -${currentDoc.stats.reductionPercent}%)`;
+        `Washed (-${currentDoc.stats.reductionPercent}%)`;
 };
 
-// MOBILE MENU
-window.toggleMenu = function () {
-    document.getElementById("mobileMenu").classList.toggle("open");
+// COPY CLEAN
+window.copyClean = function () {
+    if (!currentDoc) return;
+    copyText(currentDoc.transformedText);
+    status.innerText = "Copied cleaned log";
+};
+
+// COPY ORIGINAL
+window.copyOriginal = function () {
+    if (!currentDoc) return;
+    copyText(currentDoc.originalText);
+    status.innerText = "Copied original log";
+};
+
+// EXPORT JSON
+window.exportJSONFile = function () {
+    if (!currentDoc) return;
+    exportJSON("log.json", currentDoc);
+    status.innerText = "Exported JSON";
 };
