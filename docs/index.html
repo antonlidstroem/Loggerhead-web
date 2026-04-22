@@ -7,26 +7,55 @@
 
     <link rel="icon" href="Loggerhead-inverted.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
+<!-- Top Bar -->
 <div class="top-bar">
-    <img src="Loggerhead.png" alt="Loggerhead Logo" class="ui-logo">
-    
-    <strong>Loggerhead</strong>
+    <div class="brand">
+        <img src="Loggerhead.png" class="logo">
+        <span class="title">Loggerhead</span>
+        <span class="version">v1.3</span>
+    </div>
 
-    <input type="file" id="fileInput" hidden>
-
-    <button onclick="document.getElementById('fileInput').click()">📁 Open file</button>
-    <button onclick="pasteFromClipboard()">📋 Paste</button>
-    <button class="btn-wash" onclick="washLog()">🧼 Wash</button>
-
-    <span id="status">Ready</span>
-
-    <button class="btn-clear" onclick="clearScreen()">🗑️ Clear</button>
+    <div class="status-wrapper">
+        <span id="status">Ready</span>
+    </div>
 </div>
 
-<div id="log-area" contenteditable="true"></div>
+<!-- Layout -->
+<div class="app">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <input type="file" id="fileInput" hidden>
+
+        <button onclick="document.getElementById('fileInput').click()">
+            📁 <span>Open</span>
+        </button>
+
+        <button onclick="pasteFromClipboard()">
+            📋 <span>Paste</span>
+        </button>
+
+        <button class="primary" onclick="washLog()">
+            🧼 <span>Wash</span>
+        </button>
+
+        <button class="danger" onclick="clearScreen()">
+            🗑 <span>Clear</span>
+        </button>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main">
+        <div id="log-area" contenteditable="true"></div>
+    </div>
+
+</div>
 
 <script>
 const logArea = document.getElementById('log-area');
