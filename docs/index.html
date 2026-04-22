@@ -3,91 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loggerhead v1.3 - Web Edition</title>
+    <title>Loggerhead v1.3</title>
 
-    <link rel="icon" href="Loggerhead-inverted.ico" type="image/x-icon">
+    <link rel="icon" href="Loggerhead-inverted.ico">
     <link rel="stylesheet" href="styles.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- Top Bar -->
-<div class="top-bar">
-    <div class="brand">
+<!-- Top bar -->
+<header class="top-bar">
+    <div class="left">
         <img src="Loggerhead.png" class="logo">
         <span class="title">Loggerhead</span>
-        <span class="version">v1.3</span>
     </div>
 
-    <div class="status-wrapper">
+    <div class="right">
         <span id="status">Ready</span>
     </div>
-</div>
+</header>
 
 <div class="app">
 
-    <!-- Sidebar (desktop only) -->
-    <div class="sidebar">
+    <!-- Sidebar (desktop) -->
+    <aside class="sidebar">
         <input type="file" id="fileInput" hidden>
 
-        <button onclick="document.getElementById('fileInput').click()">
+        <button onclick="fileInput.click()">
             <svg viewBox="0 0 24 24"><path d="M3 7h5l2 3h11v10H3z"/></svg>
-            <span>Open</span>
+            Open
         </button>
 
         <button onclick="pasteFromClipboard()">
             <svg viewBox="0 0 24 24"><path d="M9 2h6v2h3v18H6V4h3z"/></svg>
-            <span>Paste</span>
+            Paste
         </button>
 
         <button class="primary" onclick="washLog()">
             <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
-            <span>Wash</span>
+            Wash
         </button>
 
         <button class="danger" onclick="clearScreen()">
             <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7v12m6-12v12M4 7l1-3h14l1 3"/></svg>
-            <span>Clear</span>
+            Clear
         </button>
-    </div>
+    </aside>
 
     <!-- Main -->
-    <div class="main">
+    <main class="main">
         <div id="log-area" contenteditable="true"></div>
-    </div>
+    </main>
 
 </div>
 
-<!-- Bottom Bar (mobile only) -->
-<div class="bottom-bar">
-    <button onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24"><path d="M3 7h5l2 3h11v10H3z"/></svg>
-        <span>Open</span>
-    </button>
-
-    <button onclick="pasteFromClipboard()">
-        <svg viewBox="0 0 24 24"><path d="M9 2h6v2h3v18H6V4h3z"/></svg>
-        <span>Paste</span>
-    </button>
-
-    <button class="primary" onclick="washLog()">
-        <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
-        <span>Wash</span>
-    </button>
-
-    <button onclick="toggleDrawer()">
-        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-        <span>More</span>
-    </button>
+<!-- Mobile bar -->
+<div class="mobile-bar">
+    <button class="primary" onclick="washLog()">Wash</button>
+    <button onclick="toggleMenu()">More</button>
 </div>
 
-<!-- Drawer -->
-<div class="drawer" id="drawer">
-    <button class="danger" onclick="clearScreen(); toggleDrawer();">
-        <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7v12m6-12v12M4 7l1-3h14l1 3"/></svg>
-        Clear
-    </button>
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <button onclick="fileInput.click()">Open</button>
+    <button onclick="pasteFromClipboard()">Paste</button>
+    <button class="danger" onclick="clearScreen(); toggleMenu();">Clear</button>
 </div>
 
 <script>
@@ -95,7 +76,7 @@ const logArea = document.getElementById('log-area');
 const status = document.getElementById('status');
 const fileInput = document.getElementById('fileInput');
 
-// File handling
+// File
 fileInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -121,7 +102,7 @@ async function pasteFromClipboard() {
     }
 }
 
-// Clean log
+// Wash
 function washLog() {
     let text = logArea.innerText;
     if (!text.trim()) return;
@@ -134,7 +115,7 @@ function washLog() {
     status.innerText = "Cleaned";
 }
 
-// Color processing
+// Colors
 function processColors() {
     const lines = logArea.innerText.split('\n');
     logArea.innerHTML = '';
@@ -144,9 +125,9 @@ function processColors() {
         const upper = line.toUpperCase();
 
         if (line.includes("--- Cleaned Log")) div.className = 'SYSTEM';
-        else if (["ERROR", "FAIL", "ERR_", "429", "500", "TRACEBACK"].some(w => upper.includes(w))) div.className = 'ERROR';
-        else if (["WARNING", "VIOLATES", "INTERVENTION"].some(w => upper.includes(w))) div.className = 'WARNING';
-        else if (["INFO", "XHR", "FETCH"].some(w => upper.includes(w))) div.className = 'INFO';
+        else if (["ERROR","FAIL","ERR_","429","500","TRACEBACK"].some(w => upper.includes(w))) div.className = 'ERROR';
+        else if (["WARNING","VIOLATES","INTERVENTION"].some(w => upper.includes(w))) div.className = 'WARNING';
+        else if (["INFO","XHR","FETCH"].some(w => upper.includes(w))) div.className = 'INFO';
 
         div.textContent = line;
         logArea.appendChild(div);
@@ -158,10 +139,9 @@ function clearScreen() {
     status.innerText = "Cleared";
 }
 
-// Drawer toggle (UI only)
-function toggleDrawer() {
-    const d = document.getElementById('drawer');
-    d.classList.toggle('open');
+// Mobile menu
+function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
 }
 </script>
 
