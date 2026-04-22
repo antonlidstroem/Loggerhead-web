@@ -3,57 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loggerhead - Web Edition</title>
+    <title>Loggerhead</title>
 
-    <link rel="icon" href="Loggerhead-inverted.ico">
     <link rel="stylesheet" href="styles.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<!-- TOP BAR -->
 <header class="top-bar">
-    <div class="left">
-        <img src="Loggerhead.png" class="logo" alt="Loggerhead logo">
-        <span class="title">Loggerhead</span>
-    </div>
-
-    <div class="right">
-        <span id="status">Ready</span>
-    </div>
+    <span>Loggerhead</span>
+    <span id="status">Ready</span>
 </header>
 
-<!-- APP WRAPPER -->
 <div class="app">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <input type="file" id="fileInput" hidden>
 
         <button onclick="fileInput.click()">Open</button>
-
         <button onclick="pasteFromClipboard()">Paste</button>
-
-        <button class="primary" onclick="washLog()">Wash</button>
-
+        <button onclick="washLog()">Wash</button>
         <button onclick="clearScreen()">Clear</button>
 
         <hr>
 
         <button onclick="copyClean()">Copy Clean</button>
         <button onclick="copyOriginal()">Copy Original</button>
+        <button onclick="exportJSONFile()">Export JSON</button>
 
-        <button onclick="toggleDiff()">Diff View</button>
+        <hr>
 
+        <button onclick="toggleDiff()">Diff</button>
         <button onclick="restoreLast()">Restore</button>
     </aside>
 
-    <!-- MAIN AREA -->
     <main class="main">
 
-        <!-- TOOLBAR -->
         <div class="toolbar">
             <select id="profileSelect">
                 <option value="default">Default</option>
@@ -61,41 +45,20 @@
             </select>
 
             <input 
-                type="text" 
-                id="searchInput" 
-                placeholder="Search logs..."
+                type="text"
+                placeholder="Search..."
                 oninput="searchLog(this.value)"
-            />
-
-            <button onclick="exportJSONFile()">Export JSON</button>
+            >
         </div>
 
-        <!-- STATS -->
-        <div class="stats" id="statsPanel"></div>
+        <div id="statsPanel"></div>
 
-        <!-- LOG OUTPUT -->
         <div id="log-area" contenteditable="true"></div>
 
     </main>
 
 </div>
 
-<!-- MOBILE BAR -->
-<div class="mobile-bar">
-    <button class="primary" onclick="washLog()">Wash</button>
-    <button onclick="toggleMenu()">More</button>
-</div>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-    <button onclick="fileInput.click()">Open</button>
-    <button onclick="pasteFromClipboard()">Paste</button>
-    <button onclick="copyClean()">Copy Clean</button>
-    <button onclick="toggleDiff()">Diff</button>
-    <button onclick="clearScreen()">Clear</button>
-</div>
-
-<!-- ENTRY POINT -->
 <script type="module" src="./js/app.js"></script>
 
 </body>
