@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loggerhead v1.3 - Web Edition</title>
+    <style>
+        body {
+            background-color: #2b2b2b;
+            color: #dcdcdc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        /* Top Bar */
+        .top-bar {
+            background-color: #3c3f41;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        button {
+            background-color: #4e5254;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        button:hover { background-color: #5e6264; }
+        .btn-wash { background-color: #2874a6; }
+        .btn-clear { background-color: #a93226; margin-left: auto; }
+        
+        /* Log Area */
+        #log-area {
+            flex-grow: 1;
+            background-color: #1e1e1e;
+            color: #dcdcdc;
+            font-family: 'Consolas', monospace;
+            padding: 15px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            outline: none;
+            border: none;
+            font-size: 14px;
+        }
+
+        /* Tags */
+        .ERROR { color: #ff6b68; font-weight: bold; }
+        .WARNING { color: #ffb86c; }
+        .INFO { color: #62d6ff; }
+        .SYSTEM { color: #bd93f9; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <strong>Loggerhead</strong>
+    <input type="file" id="fileInput" style="display:none">
+    <button onclick="document.getElementById('fileInput').click()">📁 Öppna Fil</button>
+    <button onclick="pasteFromClipboard()">📋 Klistra in</button>
+    <button class="btn-wash" onclick="washLog()">🧼 Tvätta & Analysera</button>
+    <span id="status" style="color: #a9b7c6; font-size: 0.9em; margin-left: 10px;">Redo</span>
+    <button class="btn-clear" onclick="clearScreen()">🗑️ Rensa</button>
+</div>
+
+<div id="log-area" contenteditable="true"></div>
+
+<script>
+    const logArea = document.getElementById('log-area');
+    const status = document.getElementById('status');
+    const fileInput = document.getElementById('fileInput');
+
+    // Filhantering
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            logArea.innerText = e.target.result;
+            processColors();
+            status.innerText = "Laddat: " + file.name;
+        };
+        reader.readAsText(file);
+    });
+
+    // Klistra in
+    async function pasteFromClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            logArea.innerText = text;
+            processColors();
+            status.innerText = "Data inklistrad";
+        } catch (err) {
+            status.innerText = "Kunde inte läsa urklipp";
+        }
+    }
+
+    // Tvätta loggen (Regex)
+    function washLog() {
+        let text = logArea.innerText;
+        if (!text.trim()) return;
+
+        // 1. Ersätt URL:er
+        text = text.replace(/https?:\/\/\S+/g, '[URL]');
+        // 2. Ersätt ID:n (BardChatUI exemplet)
+        text = text.replace(/BardChatUi\.[a-zA-Z0-9.-]+/g, 'BardChatUi.[ID]');
+
+        logArea.innerText = "--- Tvättad Logg (Brus borttaget) ---\n" + text;
+        processColors();
+        status.innerText = "Loggen har tvättats!";
+    }
+
+    // Färgläggning (Motsvarar append_log i din Python-kod)
+    function processColors() {
+        const lines = logArea.innerText.split('\n');
+        logArea.innerHTML = ''; // Rensa för att bygga upp med HTML-taggar
+
+        lines.forEach(line => {
+            const div = document.createElement('div');
+            const upper = line.toUpperCase();
+            
+            if (line.includes("--- Tvättad Logg")) div.className = 'SYSTEM';
+            else if (["ERROR", "FAIL", "ERR_", "429", "500", "TRACEBACK"].some(w => upper.includes(w))) div.className = 'ERROR';
+            else if (["WARNING", "VIOLATES", "INTERVENTION"].some(w => upper.includes(w))) div.className = 'WARNING';
+            else if (["INFO", "XHR", "FETCH"].some(w => upper.includes(w))) div.className = 'INFO';
+            
+            div.textContent = line;
+            logArea.appendChild(div);
+        });
+    }
+
+    function clearScreen() {
+        logArea.innerHTML = '';
+        status.innerText = "Skärm rensad";
+    }
+</script>
+
+</body>
+</html>
