@@ -46,3 +46,28 @@ window.exportJSONFile = function () {
     exportJSON("log.json", currentDoc);
     status.innerText = "Exported JSON";
 };
+
+import { processLog } from "./logEngine.js";
+import { renderLog, renderDiff } from "./renderer.js";
+import { buildDiff } from "./diffEngine.js";
+import { searchLines } from "./searchEngine.js";
+
+let currentDoc = null;
+
+window.searchLog = function (query) {
+    if (!currentDoc) return;
+
+    currentDoc.lines = searchLines(currentDoc.lines, query);
+    renderLog(currentDoc, logArea);
+};
+
+window.toggleDiff = function () {
+    if (!currentDoc) return;
+
+    const diff = buildDiff(
+        currentDoc.originalText,
+        currentDoc.transformedText
+    );
+
+    renderDiff(diff, logArea);
+};
