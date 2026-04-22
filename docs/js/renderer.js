@@ -27,3 +27,12 @@ export function renderStats(doc, container) {
         <div>Reduction: ${s.reductionPercent}%</div>
     `;
 }
+
+export function filterLines(doc, query) {
+    if (!query) return doc.lines;
+
+    return doc.lines.map(line => ({
+        ...line,
+        hidden: !line.text.toLowerCase().includes(query.toLowerCase())
+    }));
+}
