@@ -10,12 +10,13 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- Top bar -->
+<!-- TOP BAR -->
 <header class="top-bar">
     <div class="left">
-        <img src="Loggerhead.png" class="logo">
+        <img src="Loggerhead.png" class="logo" alt="Loggerhead logo">
         <span class="title">Loggerhead</span>
     </div>
 
@@ -24,126 +25,78 @@
     </div>
 </header>
 
+<!-- APP WRAPPER -->
 <div class="app">
 
-    <!-- Sidebar (desktop) -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <input type="file" id="fileInput" hidden>
 
-        <button onclick="fileInput.click()">
-            <svg viewBox="0 0 24 24"><path d="M3 7h5l2 3h11v10H3z"/></svg>
-            Open
-        </button>
+        <button onclick="fileInput.click()">Open</button>
 
-        <button onclick="pasteFromClipboard()">
-            <svg viewBox="0 0 24 24"><path d="M9 2h6v2h3v18H6V4h3z"/></svg>
-            Paste
-        </button>
+        <button onclick="pasteFromClipboard()">Paste</button>
 
-        <button class="primary" onclick="washLog()">
-            <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
-            Wash
-        </button>
+        <button class="primary" onclick="washLog()">Wash</button>
 
-        <button class="danger" onclick="clearScreen()">
-            <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7v12m6-12v12M4 7l1-3h14l1 3"/></svg>
-            Clear
-        </button>
+        <button onclick="clearScreen()">Clear</button>
+
+        <hr>
+
+        <button onclick="copyClean()">Copy Clean</button>
+        <button onclick="copyOriginal()">Copy Original</button>
+
+        <button onclick="toggleDiff()">Diff View</button>
+
+        <button onclick="restoreLast()">Restore</button>
     </aside>
 
-    <!-- Main -->
+    <!-- MAIN AREA -->
     <main class="main">
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <select id="profileSelect">
+                <option value="default">Default</option>
+                <option value="privacy">Privacy</option>
+            </select>
+
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search logs..."
+                oninput="searchLog(this.value)"
+            />
+
+            <button onclick="exportJSONFile()">Export JSON</button>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats" id="statsPanel"></div>
+
+        <!-- LOG OUTPUT -->
         <div id="log-area" contenteditable="true"></div>
+
     </main>
 
 </div>
 
-<!-- Mobile bar -->
+<!-- MOBILE BAR -->
 <div class="mobile-bar">
     <button class="primary" onclick="washLog()">Wash</button>
     <button onclick="toggleMenu()">More</button>
 </div>
 
-<!-- Mobile menu -->
+<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
     <button onclick="fileInput.click()">Open</button>
     <button onclick="pasteFromClipboard()">Paste</button>
-    <button class="danger" onclick="clearScreen(); toggleMenu();">Clear</button>
+    <button onclick="copyClean()">Copy Clean</button>
+    <button onclick="toggleDiff()">Diff</button>
+    <button onclick="clearScreen()">Clear</button>
 </div>
 
-<script>
-const logArea = document.getElementById('log-area');
-const status = document.getElementById('status');
-const fileInput = document.getElementById('fileInput');
-
-// File
-fileInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        logArea.innerText = e.target.result;
-        processColors();
-        status.innerText = "Loaded: " + file.name;
-    };
-    reader.readAsText(file);
-});
-
-// Paste
-async function pasteFromClipboard() {
-    try {
-        const text = await navigator.clipboard.readText();
-        logArea.innerText = text;
-        processColors();
-        status.innerText = "Pasted";
-    } catch {
-        status.innerText = "Clipboard blocked";
-    }
-}
-
-// Wash
-function washLog() {
-    let text = logArea.innerText;
-    if (!text.trim()) return;
-
-    text = text.replace(/https?:\/\/\S+/g, '[URL]');
-    text = text.replace(/BardChatUi\.[a-zA-Z0-9.-]+/g, 'BardChatUi.[ID]');
-
-    logArea.innerText = "--- Cleaned Log ---\n" + text;
-    processColors();
-    status.innerText = "Cleaned";
-}
-
-// Colors
-function processColors() {
-    const lines = logArea.innerText.split('\n');
-    logArea.innerHTML = '';
-
-    lines.forEach(line => {
-        const div = document.createElement('div');
-        const upper = line.toUpperCase();
-
-        if (line.includes("--- Cleaned Log")) div.className = 'SYSTEM';
-        else if (["ERROR","FAIL","ERR_","429","500","TRACEBACK"].some(w => upper.includes(w))) div.className = 'ERROR';
-        else if (["WARNING","VIOLATES","INTERVENTION"].some(w => upper.includes(w))) div.className = 'WARNING';
-        else if (["INFO","XHR","FETCH"].some(w => upper.includes(w))) div.className = 'INFO';
-
-        div.textContent = line;
-        logArea.appendChild(div);
-    });
-}
-
-function clearScreen() {
-    logArea.innerHTML = '';
-    status.innerText = "Cleared";
-}
-
-// Mobile menu
-function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-}
-</script>
+<!-- ENTRY POINT -->
+<script type="module" src="./js/app.js"></script>
 
 </body>
 </html>
