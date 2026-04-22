@@ -8,7 +8,6 @@
     <link rel="icon" href="Loggerhead-inverted.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -26,35 +25,69 @@
     </div>
 </div>
 
-<!-- Layout -->
 <div class="app">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (desktop only) -->
     <div class="sidebar">
         <input type="file" id="fileInput" hidden>
 
         <button onclick="document.getElementById('fileInput').click()">
-            📁 <span>Open</span>
+            <svg viewBox="0 0 24 24"><path d="M3 7h5l2 3h11v10H3z"/></svg>
+            <span>Open</span>
         </button>
 
         <button onclick="pasteFromClipboard()">
-            📋 <span>Paste</span>
+            <svg viewBox="0 0 24 24"><path d="M9 2h6v2h3v18H6V4h3z"/></svg>
+            <span>Paste</span>
         </button>
 
         <button class="primary" onclick="washLog()">
-            🧼 <span>Wash</span>
+            <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
+            <span>Wash</span>
         </button>
 
         <button class="danger" onclick="clearScreen()">
-            🗑 <span>Clear</span>
+            <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7v12m6-12v12M4 7l1-3h14l1 3"/></svg>
+            <span>Clear</span>
         </button>
     </div>
 
-    <!-- Main Panel -->
+    <!-- Main -->
     <div class="main">
         <div id="log-area" contenteditable="true"></div>
     </div>
 
+</div>
+
+<!-- Bottom Bar (mobile only) -->
+<div class="bottom-bar">
+    <button onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24"><path d="M3 7h5l2 3h11v10H3z"/></svg>
+        <span>Open</span>
+    </button>
+
+    <button onclick="pasteFromClipboard()">
+        <svg viewBox="0 0 24 24"><path d="M9 2h6v2h3v18H6V4h3z"/></svg>
+        <span>Paste</span>
+    </button>
+
+    <button class="primary" onclick="washLog()">
+        <svg viewBox="0 0 24 24"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
+        <span>Wash</span>
+    </button>
+
+    <button onclick="toggleDrawer()">
+        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+        <span>More</span>
+    </button>
+</div>
+
+<!-- Drawer -->
+<div class="drawer" id="drawer">
+    <button class="danger" onclick="clearScreen(); toggleDrawer();">
+        <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7v12m6-12v12M4 7l1-3h14l1 3"/></svg>
+        Clear
+    </button>
 </div>
 
 <script>
@@ -123,6 +156,12 @@ function processColors() {
 function clearScreen() {
     logArea.innerHTML = '';
     status.innerText = "Cleared";
+}
+
+// Drawer toggle (UI only)
+function toggleDrawer() {
+    const d = document.getElementById('drawer');
+    d.classList.toggle('open');
 }
 </script>
 
