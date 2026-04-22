@@ -143,13 +143,11 @@ button svg {
 .INFO { color: #79c0ff; }
 .SYSTEM { color: #a371f7; }
 
-/* Mobile */
-.mobile-bar {
-    display: none;
-}
-
+/* Mobile UI - disabled by default */
+.mobile-bar,
 .mobile-menu {
-    display: none;
+    display: none !important;
+    pointer-events: none;
 }
 
 /* Responsive */
@@ -165,12 +163,19 @@ button svg {
     }
 
     .mobile-bar {
-        display: flex;
+        display: flex !important;
+        pointer-events: auto;
+
         position: fixed;
         bottom: 0;
+        left: 0;
+
         width: 100%;
+        height: 60px;
+
         border-top: 1px solid var(--border);
         background: var(--surface);
+        z-index: 1000;
     }
 
     .mobile-bar button {
@@ -188,15 +193,20 @@ button svg {
         position: fixed;
         bottom: 60px;
         left: 0;
+
         width: 100%;
         background: var(--surface);
         border-top: 1px solid var(--border);
+
         display: none;
         flex-direction: column;
+
+        z-index: 1001;
     }
 
     .mobile-menu.open {
-        display: flex;
+        display: flex !important;
+        pointer-events: auto;
     }
 
     .mobile-menu button {
