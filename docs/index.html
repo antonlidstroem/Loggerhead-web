@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loggerhead v1.3 - Web Edition</title>
+    
+    <link rel="icon" href="Loggerhead-inverted.ico" type="image/x-icon">
+    
     <style>
         body {
             background-color: #2b2b2b;
@@ -23,6 +26,14 @@
             gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
+
+        /* NYTT: Styling för logotypen i UI:t */
+        .ui-logo {
+            height: 35px; /* Sätter en lagom höjd */
+            width: auto;  /* Behåller proportionerna */
+            margin-right: 5px; /* Lite mellanrum till texten */
+        }
+
         button {
             background-color: #4e5254;
             color: white;
@@ -59,6 +70,8 @@
 <body>
 
 <div class="top-bar">
+    <img src="Loggerhead.png" alt="Loggerhead Logo" class="ui-logo">
+    
     <strong>Loggerhead</strong>
     <input type="file" id="fileInput" style="display:none">
     <button onclick="document.getElementById('fileInput').click()">📁 Öppna Fil</button>
