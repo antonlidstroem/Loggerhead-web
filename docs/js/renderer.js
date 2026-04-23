@@ -1,5 +1,3 @@
-// js/renderer.js
-
 export function renderLog(doc, container) {
     container.innerHTML = "";
 
@@ -11,8 +9,12 @@ export function renderLog(doc, container) {
         if (line.level) div.classList.add(line.level);
         if (line.match) div.classList.add("HIGHLIGHT");
 
-        if (line.hidden) {
-            div.style.display = "none";
+        if (line.count > 1) {
+            const badge = document.createElement("span");
+            badge.textContent = ` x${line.count}`;
+            badge.style.opacity = "0.6";
+            badge.style.marginLeft = "6px";
+            div.appendChild(badge);
         }
 
         container.appendChild(div);
@@ -34,14 +36,28 @@ export function renderDiff(diff, container) {
     container.innerHTML = "";
 
     diff.forEach(d => {
-        const div = document.createElement("div");
+        const row = document.createElement("div");
+        row.className = "diff-row";
 
-        if (d.type === "removed") div.className = "DIFF-REMOVED";
-        if (d.type === "added") div.className = "DIFF-ADDED";
-        if (d.type === "changed") div.className = "DIFF-CHANGED";
+        const left = document.createElement("div");
+        const right = document.createElement("div");
 
-        div.textContent = `${d.original || ""} → ${d.transformed || ""}`;
+        left.textContent = d.original || "";
+        right.textContent = d.transformed || "";
 
-        container.appendChild(div);
+        left.className = "diff-left";
+        right.className = "diff-right";
+
+        if (d.type === "removed") left.classList.add("DIFF-REMOVED");
+        if (d.type === "added") right.classList.add("DIFF-ADDED");
+        if (d.type === "changed") {
+            left.classList.add("DIFF-REMOVED");
+            right.classList.add("DIFF-ADDED");
+        }
+
+        row.appendChild(left);
+        row.appendChild(right);
+
+        container.appendChild(row);
     });
 }
