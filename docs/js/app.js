@@ -5,22 +5,23 @@ import { saveSession, getLatest } from "./storage.js";
 import { buildDiff } from "./diffEngine.js";
 import { searchLines } from "./searchEngine.js";
 
-// DOM (safe init)
+// DOM
 const logArea = document.getElementById("log-area");
 const status = document.getElementById("status");
 const statsPanel = document.getElementById("statsPanel");
 const profileSelect = document.getElementById("profileSelect");
 const fileInput = document.getElementById("fileInput");
 
-// expose for inline HTML
+// expose
 window.fileInput = fileInput;
 
 let currentDoc = null;
 let isDiffView = false;
 
-// --------------------
+let matches = [];
+let matchIndex = 0;
+
 // FILE LOAD
-// --------------------
 fileInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -31,9 +32,7 @@ fileInput.addEventListener("change", async (e) => {
     status.innerText = `Loaded: ${file.name}`;
 });
 
-// --------------------
 // PASTE
-// --------------------
 window.pasteFromClipboard = async function () {
     try {
         const text = await navigator.clipboard.readText();
@@ -44,20 +43,16 @@ window.pasteFromClipboard = async function () {
     }
 };
 
-// --------------------
 // CLEAR
-// --------------------
 window.clearScreen = function () {
     logArea.innerHTML = "";
-    currentDoc = null;
     statsPanel.innerHTML = "";
+    currentDoc = null;
     isDiffView = false;
     status.innerText = "Cleared";
 };
 
-// --------------------
 // WASH
-// --------------------
 window.washLog = function () {
     const input = logArea.innerText.trim();
     if (!input) return;
@@ -73,52 +68,67 @@ window.washLog = function () {
     status.innerText = `Washed (-${currentDoc.stats.reductionPercent}%)`;
 };
 
-// --------------------
 // COPY
-// --------------------
 window.copyClean = function () {
     if (!currentDoc) return;
-
     copyText(currentDoc.transformedText);
     status.innerText = "Copied cleaned log";
 };
 
 window.copyOriginal = function () {
     if (!currentDoc) return;
-
     copyText(currentDoc.originalText);
     status.innerText = "Copied original log";
 };
 
-// --------------------
 // EXPORT
-// --------------------
 window.exportJSONFile = function () {
     if (!currentDoc) return;
-
     exportJSON("log.json", currentDoc);
     status.innerText = "Exported JSON";
 };
 
-// --------------------
 // SEARCH
-// --------------------
 window.searchLog = function (query) {
     if (!currentDoc || isDiffView) return;
 
     const resultLines = searchLines(currentDoc.lines, query);
 
+    matches = resultLines
+        .map((l, i) => l.match ? i : -1)
+        .filter(i => i !== -1);
+
+    matchIndex = 0;
+
     renderLog({ ...currentDoc, lines: resultLines }, logArea);
+
+    status.innerText = `${matches.length} matches`;
 };
 
-// --------------------
-// DIFF TOGGLE
-// --------------------
+window.nextMatch = function () {
+    if (!matches.length) return;
+
+    matchIndex = (matchIndex + 1) % matches.length;
+    scrollToMatch();
+};
+
+window.prevMatch = function () {
+    if (!matches.length) return;
+
+    matchIndex = (matchIndex - 1 + matches.length) % matches.length;
+    scrollToMatch();
+};
+
+function scrollToMatch() {
+    const el = logArea.children[matches[matchIndex]];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// DIFF
 window.toggleDiff = function () {
     if (!currentDoc) return;
 
     if (isDiffView) {
-        // tillbaka till normal vy
         renderLog(currentDoc, logArea);
         renderStats(currentDoc, statsPanel);
         status.innerText = "Normal view";
@@ -137,9 +147,7 @@ window.toggleDiff = function () {
     isDiffView = true;
 };
 
-// --------------------
-// RESTORE SESSION
-// --------------------
+// RESTORE
 window.restoreLast = function () {
     const doc = getLatest();
     if (!doc) return;
@@ -153,9 +161,7 @@ window.restoreLast = function () {
     status.innerText = "Restored session";
 };
 
-// --------------------
 // MOBILE MENU
-// --------------------
 window.toggleMenu = function () {
     document.getElementById("mobileMenu").classList.toggle("open");
 };
