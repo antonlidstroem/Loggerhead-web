@@ -5,55 +5,32 @@ import { saveSession, getLatest } from "./storage.js";
 import { buildDiff } from "./diffEngine.js";
 import { searchLines } from "./searchEngine.js";
 
-// DOM
 const logArea = document.getElementById("log-area");
 const status = document.getElementById("status");
 const statsPanel = document.getElementById("statsPanel");
 const profileSelect = document.getElementById("profileSelect");
 const fileInput = document.getElementById("fileInput");
 
-// expose
 window.fileInput = fileInput;
 
 let currentDoc = null;
 let isDiffView = false;
 
-let matches = [];
-let matchIndex = 0;
-
-// FILE LOAD
-fileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const text = await file.text();
+// 🔥 CRITICAL: expose EVERYTHING USED IN HTML
+window.pasteFromClipboard = async () => {
+    const text = await navigator.clipboard.readText();
     logArea.innerText = text;
-
-    status.innerText = `Loaded: ${file.name}`;
-});
-
-// PASTE
-window.pasteFromClipboard = async function () {
-    try {
-        const text = await navigator.clipboard.readText();
-        logArea.innerText = text;
-        status.innerText = "Pasted";
-    } catch {
-        status.innerText = "Clipboard blocked";
-    }
+    status.innerText = "Pasted";
 };
 
-// CLEAR
-window.clearScreen = function () {
+window.clearScreen = () => {
     logArea.innerHTML = "";
     statsPanel.innerHTML = "";
     currentDoc = null;
-    isDiffView = false;
     status.innerText = "Cleared";
 };
 
-// WASH
-window.washLog = function () {
+window.washLog = () => {
     const input = logArea.innerText.trim();
     if (!input) return;
 
@@ -68,100 +45,67 @@ window.washLog = function () {
     status.innerText = `Washed (-${currentDoc.stats.reductionPercent}%)`;
 };
 
-// COPY
-window.copyClean = function () {
+window.copyClean = () => {
     if (!currentDoc) return;
     copyText(currentDoc.transformedText);
-    status.innerText = "Copied cleaned log";
+    status.innerText = "Copied clean";
 };
 
-window.copyOriginal = function () {
+window.copyOriginal = () => {
     if (!currentDoc) return;
     copyText(currentDoc.originalText);
-    status.innerText = "Copied original log";
+    status.innerText = "Copied original";
 };
 
-// EXPORT
-window.exportJSONFile = function () {
+window.exportJSONFile = () => {
     if (!currentDoc) return;
     exportJSON("log.json", currentDoc);
-    status.innerText = "Exported JSON";
 };
 
-// SEARCH
-window.searchLog = function (query) {
-    if (!currentDoc || isDiffView) return;
-
-    const resultLines = searchLines(currentDoc.lines, query);
-
-    matches = resultLines
-        .map((l, i) => l.match ? i : -1)
-        .filter(i => i !== -1);
-
-    matchIndex = 0;
-
-    renderLog({ ...currentDoc, lines: resultLines }, logArea);
-
-    status.innerText = `${matches.length} matches`;
-};
-
-window.nextMatch = function () {
-    if (!matches.length) return;
-
-    matchIndex = (matchIndex + 1) % matches.length;
-    scrollToMatch();
-};
-
-window.prevMatch = function () {
-    if (!matches.length) return;
-
-    matchIndex = (matchIndex - 1 + matches.length) % matches.length;
-    scrollToMatch();
-};
-
-function scrollToMatch() {
-    const el = logArea.children[matches[matchIndex]];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-
-// DIFF
-window.toggleDiff = function () {
+window.toggleDiff = () => {
     if (!currentDoc) return;
 
     if (isDiffView) {
         renderLog(currentDoc, logArea);
-        renderStats(currentDoc, statsPanel);
-        status.innerText = "Normal view";
         isDiffView = false;
+        status.innerText = "Normal";
         return;
     }
 
-    const diff = buildDiff(
-        currentDoc.originalText,
-        currentDoc.transformedText
-    );
-
+    const diff = buildDiff(currentDoc.originalText, currentDoc.transformedText);
     renderDiff(diff, logArea);
 
-    status.innerText = "Diff view";
     isDiffView = true;
+    status.innerText = "Diff";
 };
 
-// RESTORE
-window.restoreLast = function () {
+window.restoreLast = () => {
     const doc = getLatest();
     if (!doc) return;
 
     currentDoc = doc;
-    isDiffView = false;
-
     renderLog(doc, logArea);
     renderStats(doc, statsPanel);
 
-    status.innerText = "Restored session";
+    status.innerText = "Restored";
 };
 
-// MOBILE MENU
-window.toggleMenu = function () {
+window.searchLog = (q) => {
+    if (!currentDoc) return;
+
+    const lines = searchLines(currentDoc.lines, q);
+    renderLog({ ...currentDoc, lines }, logArea);
+};
+
+window.toggleMenu = () => {
     document.getElementById("mobileMenu").classList.toggle("open");
 };
+
+// file load
+fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    const text = await file.text();
+
+    logArea.innerText = text;
+    status.innerText = "Loaded";
+});
