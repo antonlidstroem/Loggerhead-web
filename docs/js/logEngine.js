@@ -1,7 +1,6 @@
-// js/logEngine.js
-
 import { washProfiles } from "./washProfiles.js";
 import { calculateStats, compareStats } from "./statsEngine.js";
+import { collapseLines } from "./collapseEngine.js";
 
 export function processLog(inputText, profileName = "default") {
     const profile = washProfiles[profileName] || washProfiles.default;
@@ -10,7 +9,6 @@ export function processLog(inputText, profileName = "default") {
 
     let transformed = inputText;
 
-    // APPLY WASH RULES
     for (const rule of profile.rules) {
         if (rule.type === "replace") {
             transformed = transformed.replace(rule.pattern, rule.replacement);
@@ -18,14 +16,14 @@ export function processLog(inputText, profileName = "default") {
     }
 
     const statsAfter = calculateStats(transformed);
-
     const comparison = compareStats(statsBefore, statsAfter);
 
-    // CLASSIFY LINES
-    const lines = transformed.split("\n").map(line => ({
+    const rawLines = transformed.split("\n").map(line => ({
         text: line,
         level: classifyLine(line)
     }));
+
+    const lines = collapseLines(rawLines);
 
     return {
         originalText: inputText,
