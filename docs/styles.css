@@ -2,15 +2,13 @@
     --bg: #0d1117;
     --surface: #161b22;
     --border: #30363d;
-
     --text: #e6edf3;
     --muted: #8b949e;
-
     --primary: #2383e2;
     --danger: #f85149;
 }
 
-/* Base */
+/* BASE */
 * { box-sizing: border-box; }
 
 body {
@@ -18,12 +16,12 @@ body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Inter', sans-serif;
-    height: 100dvh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* Top */
+/* TOP */
 .top-bar {
     height: 52px;
     display: flex;
@@ -33,33 +31,14 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
-.left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.logo {
-    height: 24px;
-}
-
-.title {
-    font-weight: 500;
-}
-
-.right {
-    color: var(--muted);
-    font-size: 0.85rem;
-}
-
-/* Layout */
+/* LAYOUT */
 .app {
     flex: 1;
     display: flex;
     overflow: hidden;
 }
 
-/* Sidebar */
+/* SIDEBAR */
 .sidebar {
     width: 160px;
     border-right: 1px solid var(--border);
@@ -69,166 +48,76 @@ body {
     gap: 8px;
 }
 
-/* Buttons */
-button {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    font-size: 13px;
-}
-
-button:hover {
-    background: rgba(255,255,255,0.05);
-}
-
-button.primary {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
-}
-
-button.primary:hover {
-    background: #1f6fbf;
-}
-
-button.danger {
-    color: var(--danger);
-    border-color: transparent;
-}
-
-/* Icons */
-button svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-}
-
-/* Main */
+/* MAIN */
 .main {
     flex: 1;
     padding: 16px;
+    overflow: hidden;
 }
 
+/* LOG AREA */
 #log-area {
-    height: 100%;
+    height: calc(100vh - 140px);
+    overflow-y: auto;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 14px;
-
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-
-    overflow-y: auto;
-    white-space: pre-wrap;
+    padding: 12px;
+    font-family: monospace;
 }
 
-/* Log */
-#log-area div {
-    padding: 2px 4px;
-}
-
-.ERROR { color: #ff7b72; }
-.WARNING { color: #d29922; }
-.INFO { color: #79c0ff; }
-.SYSTEM { color: #a371f7; }
-
-/* Mobile */
+/* MOBILE FIX CORE */
 .mobile-bar {
     display: none;
-z-index: 1000;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 9999;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
 }
 
+.mobile-bar button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    color: var(--text);
+}
+
+/* MENU FIX */
 .mobile-menu {
     display: none;
-z-index: 1000;
+    position: fixed;
+    bottom: 60px;
+    width: 100%;
+    z-index: 9999;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
 }
 
+.mobile-menu.open {
+    display: flex;
+    flex-direction: column;
+}
 
+.mobile-menu button {
+    padding: 14px;
+    border: none;
+    border-bottom: 1px solid var(--border);
+}
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
 
     .sidebar {
         display: none;
     }
 
-    .main {
-        padding: 8px;
-        padding-bottom: 70px;
-    }
-
     .mobile-bar {
         display: flex;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        border-top: 1px solid var(--border);
-        background: var(--surface);
     }
 
-    .mobile-bar button {
-        flex: 1;
-        justify-content: center;
-        border: none;
-        border-right: 1px solid var(--border);
+    .main {
+        padding-bottom: 80px; /* IMPORTANT FIX */
     }
-
-    .mobile-bar button:last-child {
-        border-right: none;
-    }
-
-    .mobile-menu {
-        position: fixed;
-        bottom: 60px;
-        left: 0;
-        width: 100%;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        display: none;
-        flex-direction: column;
-    }
-
-    .mobile-menu.open {
-        display: flex;
-    }
-
-    .mobile-menu button {
-        padding: 14px;
-        border: none;
-        border-bottom: 1px solid var(--border);
-        justify-content: center;
-    }
-}
-.HIGHLIGHT {
-    background: rgba(255, 230, 0, 0.2);
-}
-
-.diff-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.diff-left, .diff-right {
-    padding: 4px;
-    font-family: monospace;
-}
-
-.DIFF-REMOVED {
-    background: rgba(248, 81, 73, 0.15);
-}
-
-.DIFF-ADDED {
-    background: rgba(46, 160, 67, 0.15);
 }
