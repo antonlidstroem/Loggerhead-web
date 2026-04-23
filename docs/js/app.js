@@ -5,32 +5,60 @@ import { saveSession, getLatest } from "./storage.js";
 import { buildDiff } from "./diffEngine.js";
 import { searchLines } from "./searchEngine.js";
 
+// DOM (safe init)
 const logArea = document.getElementById("log-area");
 const status = document.getElementById("status");
 const statsPanel = document.getElementById("statsPanel");
 const profileSelect = document.getElementById("profileSelect");
 const fileInput = document.getElementById("fileInput");
 
+// expose for inline HTML
 window.fileInput = fileInput;
 
 let currentDoc = null;
 let isDiffView = false;
 
-// 🔥 CRITICAL: expose EVERYTHING USED IN HTML
-window.pasteFromClipboard = async () => {
-    const text = await navigator.clipboard.readText();
+// --------------------
+// FILE LOAD
+// --------------------
+fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const text = await file.text();
     logArea.innerText = text;
-    status.innerText = "Pasted";
+
+    status.innerText = `Loaded: ${file.name}`;
+});
+
+// --------------------
+// PASTE
+// --------------------
+window.pasteFromClipboard = async function () {
+    try {
+        const text = await navigator.clipboard.readText();
+        logArea.innerText = text;
+        status.innerText = "Pasted";
+    } catch {
+        status.innerText = "Clipboard blocked";
+    }
 };
 
-window.clearScreen = () => {
+// --------------------
+// CLEAR
+// --------------------
+window.clearScreen = function () {
     logArea.innerHTML = "";
-    statsPanel.innerHTML = "";
     currentDoc = null;
+    statsPanel.innerHTML = "";
+    isDiffView = false;
     status.innerText = "Cleared";
 };
 
-window.washLog = () => {
+// --------------------
+// WASH
+// --------------------
+window.washLog = function () {
     const input = logArea.innerText.trim();
     if (!input) return;
 
@@ -45,67 +73,89 @@ window.washLog = () => {
     status.innerText = `Washed (-${currentDoc.stats.reductionPercent}%)`;
 };
 
-window.copyClean = () => {
+// --------------------
+// COPY
+// --------------------
+window.copyClean = function () {
     if (!currentDoc) return;
+
     copyText(currentDoc.transformedText);
-    status.innerText = "Copied clean";
+    status.innerText = "Copied cleaned log";
 };
 
-window.copyOriginal = () => {
+window.copyOriginal = function () {
     if (!currentDoc) return;
+
     copyText(currentDoc.originalText);
-    status.innerText = "Copied original";
+    status.innerText = "Copied original log";
 };
 
-window.exportJSONFile = () => {
+// --------------------
+// EXPORT
+// --------------------
+window.exportJSONFile = function () {
     if (!currentDoc) return;
+
     exportJSON("log.json", currentDoc);
+    status.innerText = "Exported JSON";
 };
 
-window.toggleDiff = () => {
+// --------------------
+// SEARCH
+// --------------------
+window.searchLog = function (query) {
+    if (!currentDoc || isDiffView) return;
+
+    const resultLines = searchLines(currentDoc.lines, query);
+
+    renderLog({ ...currentDoc, lines: resultLines }, logArea);
+};
+
+// --------------------
+// DIFF TOGGLE
+// --------------------
+window.toggleDiff = function () {
     if (!currentDoc) return;
 
     if (isDiffView) {
+        // tillbaka till normal vy
         renderLog(currentDoc, logArea);
+        renderStats(currentDoc, statsPanel);
+        status.innerText = "Normal view";
         isDiffView = false;
-        status.innerText = "Normal";
         return;
     }
 
-    const diff = buildDiff(currentDoc.originalText, currentDoc.transformedText);
+    const diff = buildDiff(
+        currentDoc.originalText,
+        currentDoc.transformedText
+    );
+
     renderDiff(diff, logArea);
 
+    status.innerText = "Diff view";
     isDiffView = true;
-    status.innerText = "Diff";
 };
 
-window.restoreLast = () => {
+// --------------------
+// RESTORE SESSION
+// --------------------
+window.restoreLast = function () {
     const doc = getLatest();
     if (!doc) return;
 
     currentDoc = doc;
+    isDiffView = false;
+
     renderLog(doc, logArea);
     renderStats(doc, statsPanel);
 
-    status.innerText = "Restored";
+    status.innerText = "Restored session";
 };
 
-window.searchLog = (q) => {
-    if (!currentDoc) return;
-
-    const lines = searchLines(currentDoc.lines, q);
-    renderLog({ ...currentDoc, lines }, logArea);
-};
-
-window.toggleMenu = () => {
+// --------------------
+// MOBILE MENU
+// --------------------
+window.toggleMenu = function () {
     document.getElementById("mobileMenu").classList.toggle("open");
 };
-
-// file load
-fileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    const text = await file.text();
-
-    logArea.innerText = text;
-    status.innerText = "Loaded";
-});

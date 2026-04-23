@@ -20,21 +20,21 @@
     <aside class="sidebar">
         <input type="file" id="fileInput" hidden>
 
-        <button onclick="fileInput.click()">Open</button>
-        <button onclick="pasteFromClipboard()">Paste</button>
-        <button onclick="washLog()">Wash</button>
-        <button onclick="clearScreen()">Clear</button>
+        <button id="btnOpen">Open</button>
+        <button id="btnPaste">Paste</button>
+        <button id="btnWash">Wash</button>
+        <button id="btnClear">Clear</button>
 
         <hr>
 
-        <button onclick="copyClean()">Copy Clean</button>
-        <button onclick="copyOriginal()">Copy Original</button>
-        <button onclick="exportJSONFile()">Export JSON</button>
+        <button id="btnCopyClean">Copy Clean</button>
+        <button id="btnCopyOriginal">Copy Original</button>
+        <button id="btnExport">Export JSON</button>
 
         <hr>
 
-        <button onclick="toggleDiff()">Diff</button>
-        <button onclick="restoreLast()">Restore</button>
+        <button id="btnDiff">Diff</button>
+        <button id="btnRestore">Restore</button>
     </aside>
 
     <main class="main">
@@ -47,12 +47,13 @@
 
             <input type="text"
                    placeholder="Search..."
-                   oninput="searchLog(this.value)">
+                   id="searchInput">
         </div>
 
         <div id="statsPanel"></div>
 
-        <div id="log-area"></div>
+        <!-- 🔥 CRITICAL FIX -->
+        <div id="log-area" contenteditable="true"></div>
 
     </main>
 
@@ -60,18 +61,18 @@
 
 <!-- MOBILE BAR -->
 <div class="mobile-bar">
-    <button onclick="washLog()">Wash</button>
-    <button onclick="copyClean()">Copy</button>
-    <button onclick="toggleDiff()">Diff</button>
-    <button onclick="toggleMenu()">More</button>
+    <button id="mWash">Wash</button>
+    <button id="mCopy">Copy</button>
+    <button id="mDiff">Diff</button>
+    <button id="mMenu">More</button>
 </div>
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
-    <button onclick="fileInput.click()">Open</button>
-    <button onclick="pasteFromClipboard()">Paste</button>
-    <button onclick="clearScreen()">Clear</button>
-    <button onclick="restoreLast()">Restore</button>
+    <button id="mOpen">Open</button>
+    <button id="mPaste">Paste</button>
+    <button id="mClear">Clear</button>
+    <button id="mRestore">Restore</button>
 </div>
 
 <script type="module" src="./js/app.js"></script>

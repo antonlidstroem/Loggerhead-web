@@ -53,11 +53,29 @@ body {
     flex: 1;
     padding: 16px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOOLBAR */
+.toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.toolbar input,
+.toolbar select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 6px;
 }
 
 /* LOG AREA */
 #log-area {
-    height: calc(100vh - 140px);
+    flex: 1;
     overflow-y: auto;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -66,44 +84,66 @@ body {
     font-family: monospace;
 }
 
-/* MOBILE FIX CORE */
+/* BUTTONS */
+button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s ease;
+}
+
+button:hover {
+    background: #21262d;
+    border-color: #444c56;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* primary */
+#btnWash,
+#mWash {
+    background: var(--primary);
+    border: none;
+    color: white;
+}
+
+/* danger */
+#btnClear {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* MOBILE */
 .mobile-bar {
     display: none;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 9999;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
 }
 
-.mobile-bar button {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    color: var(--text);
-}
-
-/* MENU FIX */
 .mobile-menu {
     display: none;
-    position: fixed;
-    bottom: 60px;
-    width: 100%;
-    z-index: 9999;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
 }
 
 .mobile-menu.open {
     display: flex;
     flex-direction: column;
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 1000;
 }
 
 .mobile-menu button {
-    padding: 14px;
     border: none;
     border-bottom: 1px solid var(--border);
+    padding: 14px;
 }
 
 /* RESPONSIVE */
@@ -115,9 +155,23 @@ body {
 
     .mobile-bar {
         display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        z-index: 1000;
+    }
+
+    .mobile-bar button {
+        flex: 1;
+        border: none;
+        background: transparent;
     }
 
     .main {
-        padding-bottom: 80px; /* IMPORTANT FIX */
+        padding-bottom: 80px;
     }
 }
