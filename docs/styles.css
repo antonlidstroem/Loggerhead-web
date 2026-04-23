@@ -146,11 +146,15 @@ button svg {
 /* Mobile */
 .mobile-bar {
     display: none;
+z-index: 1000;
 }
 
 .mobile-menu {
     display: none;
+z-index: 1000;
 }
+
+
 
 /* Responsive */
 @media (max-width: 768px) {
